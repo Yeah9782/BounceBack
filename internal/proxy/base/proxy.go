@@ -78,6 +78,10 @@ func NewBaseProxy(
 
 	base := &Proxy{
 		Config: cfg,
+		TLSConfig: &tls.Config{
+			//nolint: gosec // insecure TLS clients
+			InsecureSkipVerify: true,
+		},
 
 		Closing: false,
 		Logger:  logger,
@@ -120,11 +124,7 @@ func NewBaseProxy(
 			certs = append(certs, cert)
 		}
 
-		//nolint: gosec // ignore tls min version
-		base.TLSConfig = &tls.Config{
-			Certificates:       certs,
-			InsecureSkipVerify: true, // for selfsigned tls client certs
-		}
+		base.TLSConfig.Certificates = certs
 	}
 
 	return base, nil

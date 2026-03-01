@@ -83,13 +83,14 @@ func NewProxy(
 			WriteTimeout: cfg.Timeout,
 		},
 		client: &dns.Client{
+			TLSConfig:    baseProxy.TLSConfig,
 			Timeout:      cfg.Timeout,
 			DialTimeout:  cfg.Timeout,
 			ReadTimeout:  cfg.Timeout,
 			WriteTimeout: cfg.Timeout,
 		},
 	}
-	if p.TLSConfig != nil {
+	if len(p.TLSConfig.Certificates) != 0 {
 		p.servertcp.Net = "tcp-tls"
 		p.servertcp.TLSConfig = p.TLSConfig
 	}
@@ -102,7 +103,7 @@ func NewProxy(
 func (p *Proxy) Start() error {
 	p.WG.Add(1)
 	go p.servetcp()
-	if p.TLSConfig == nil {
+	if len(p.TLSConfig.Certificates) == 0 {
 		p.WG.Add(1)
 		go p.serveudp()
 	}
@@ -115,7 +116,7 @@ func (p *Proxy) Shutdown(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("can't shutdown tcp server: %w", err)
 	}
-	if p.TLSConfig == nil {
+	if len(p.TLSConfig.Certificates) == 0 {
 		err = p.serverudp.ShutdownContext(ctx)
 		if err != nil {
 			return fmt.Errorf("can't shutdown udp server: %w", err)

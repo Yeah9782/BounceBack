@@ -77,6 +77,10 @@ func NewProxy(
 			) error {
 				return http.ErrUseLastResponse
 			},
+			Transport: &http.Transport{
+				TLSClientConfig:   baseProxy.TLSConfig,
+				ForceAttemptHTTP2: true,
+			},
 		},
 	}
 
@@ -88,11 +92,7 @@ func NewProxy(
 		Handler:      p.getHandler(),
 	}
 
-	if p.TLSConfig != nil {
-		p.client.Transport = &http.Transport{
-			TLSClientConfig:   p.TLSConfig,
-			ForceAttemptHTTP2: true,
-		}
+	if len(p.TLSConfig.Certificates) != 0 {
 		p.server.TLSConfig = p.TLSConfig
 	}
 
@@ -253,7 +253,7 @@ func (p *Proxy) getHandler() http.HandlerFunc {
 
 func (p *Proxy) serve() {
 	defer p.WG.Done()
-	if p.TLSConfig != nil {
+	if len(p.TLSConfig.Certificates) != 0 {
 		err := p.server.ListenAndServeTLS("", "")
 		if err != nil && err != http.ErrServerClosed {
 			p.Logger.Fatal().Err(err).Msg("Unexpected server error")

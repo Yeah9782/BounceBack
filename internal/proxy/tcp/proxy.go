@@ -74,9 +74,10 @@ func NewProxy(
 
 func (p *Proxy) Start() error {
 	var err error
-	if p.TLSConfig != nil {
+	if len(p.TLSConfig.Certificates) != 0 {
 		p.listener, err = tls.Listen("tcp", p.Config.ListenAddr, p.TLSConfig)
 	} else {
+		//nolint: noctx // no context needed
 		p.listener, err = net.Listen("tcp", p.Config.ListenAddr)
 	}
 	if err != nil {
@@ -196,12 +197,14 @@ func (p *Proxy) handleConnection(src net.Conn) {
 		err error
 	)
 	if p.IsTLS {
+		//nolint: noctx // no context needed
 		dst, err = tls.Dial(
 			"tcp",
 			p.TargetURL.String(),
 			p.TLSConfig,
 		)
 	} else {
+		//nolint: noctx // no context needed
 		dst, err = net.Dial("tcp", p.TargetURL.String())
 	}
 	if err != nil {

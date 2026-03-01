@@ -54,7 +54,7 @@ func NewProxy(
 		Proxy: baseProxy,
 	}
 
-	if p.TLSConfig != nil {
+	if len(p.TLSConfig.Certificates) != 0 {
 		return nil, base.ErrTLSUnsupported
 	}
 
@@ -195,6 +195,7 @@ func (p *Proxy) handleConnection(src *net.UDPAddr, data []byte) {
 	}
 
 	if !exist {
+		//nolint: noctx // no context needed
 		dst, err := net.Dial("udp", p.TargetURL.String())
 		if err != nil {
 			logger.Error().Err(err).Msg("Failed to connect to target")

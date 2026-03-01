@@ -27,7 +27,7 @@ func TestGetLocation(t *testing.T) {
 			&ipapico.Location{
 				IP:      "1.1.1.1",
 				Asn:     "AS13335",
-				Org:     "CLOUDFLARENET",
+				Org:     "Cloudflare, Inc.",
 				IsError: false,
 				Reason:  "",
 			},
@@ -41,7 +41,7 @@ func TestGetLocation(t *testing.T) {
 			&ipapico.Location{
 				IP:      "2606:4700:4700::1111",
 				Asn:     "AS13335",
-				Org:     "CLOUDFLARENET",
+				Org:     "Cloudflare, Inc.",
 				IsError: false,
 				Reason:  "",
 			},
